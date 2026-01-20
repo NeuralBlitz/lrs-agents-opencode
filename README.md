@@ -1,12 +1,6 @@
-# Archived: Project has Moved
 
-This repository is no longer maintained and has been archived for provenance.
 
-The project has continued under the name [Crush][crush], developed by the original author and the Charm team.
 
-Please follow [Crush][crush] for ongoing development.
-
-[crush]: https://github.com/charmbracelet/crush
 
 
 # ⌬ OpenCode
