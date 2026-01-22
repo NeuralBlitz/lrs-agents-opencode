@@ -1,9 +1,13 @@
 package mcp
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
+// Note: This command is a wrapper. The actual server implementation
+// is in main.go and can be run standalone with: go run cmd/mcp/main.go
 var ServerCmd = &cobra.Command{
 	Use:   "mcp-server",
 	Short: "Start the OpenCode MCP server",
@@ -36,8 +40,10 @@ It also provides resources and prompts for extended functionality.`,
   #   }
   # }`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// This will be handled by the main function in main.go
-		// We import it here to ensure it's built
-		return nil
+		// Import and run the server
+		// We need to call the runServer function from main.go
+		// Since we can't directly import main package, we'll need to refactor
+		// For now, this is a placeholder - users should run: go run cmd/mcp/main.go
+		return fmt.Errorf("MCP server subcommand is not yet integrated. Please run: go run cmd/mcp/main.go")
 	},
 }

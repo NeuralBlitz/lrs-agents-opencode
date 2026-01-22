@@ -17,6 +17,10 @@ import (
 )
 
 func main() {
+	runServer()
+}
+
+func runServer() {
 	// Create a new MCP server
 	s := server.NewMCPServer(
 		"OpenCode MCP Server",
