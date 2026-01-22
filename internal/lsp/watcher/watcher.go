@@ -732,10 +732,32 @@ func shouldPreloadFiles(serverName string) bool {
 	}
 }
 
-// Common patterns for directories and files to exclude
-// TODO: make configurable
-var (
-	excludedDirNames = map[string]bool{
+// Maximum file size to open (5MB)
+var maxFileSize int64 = 5 * 1024 * 1024
+
+// getExcludedDirNames returns a map of excluded directory names from config or defaults
+func getExcludedDirNames() map[string]bool {
+	cnf := config.Get()
+	if cnf == nil {
+		return getDefaultExcludedDirNames()
+	}
+
+	excluded := make(map[string]bool)
+	for _, dir := range cnf.Watcher.ExcludedDirNames {
+		excluded[dir] = true
+	}
+
+	// If config is empty, use defaults
+	if len(excluded) == 0 {
+		return getDefaultExcludedDirNames()
+	}
+
+	return excluded
+}
+
+// getDefaultExcludedDirNames returns the default excluded directory names
+func getDefaultExcludedDirNames() map[string]bool {
+	return map[string]bool{
 		".git":         true,
 		"node_modules": true,
 		"dist":         true,
@@ -749,8 +771,31 @@ var (
 		"target":       true, // Rust build output
 		"vendor":       true, // Go vendor directory
 	}
+}
 
-	excludedFileExtensions = map[string]bool{
+// getExcludedFileExtensions returns a map of excluded file extensions from config or defaults
+func getExcludedFileExtensions() map[string]bool {
+	cnf := config.Get()
+	if cnf == nil {
+		return getDefaultExcludedFileExtensions()
+	}
+
+	excluded := make(map[string]bool)
+	for _, ext := range cnf.Watcher.ExcludedFileExtensions {
+		excluded[strings.ToLower(ext)] = true
+	}
+
+	// If config is empty, use defaults
+	if len(excluded) == 0 {
+		return getDefaultExcludedFileExtensions()
+	}
+
+	return excluded
+}
+
+// getDefaultExcludedFileExtensions returns the default excluded file extensions
+func getDefaultExcludedFileExtensions() map[string]bool {
+	return map[string]bool{
 		".swp":   true,
 		".swo":   true,
 		".tmp":   true,
@@ -764,32 +809,25 @@ var (
 		".a":     true, // Static libraries
 		".exe":   true, // Windows executables
 		".lock":  true, // Lock files
+		".png":   true, // Large binary files
+		".jpg":   true,
+		".jpeg":  true,
+		".gif":   true,
+		".bmp":   true,
+		".ico":   true,
+		".zip":   true,
+		".tar":   true,
+		".gz":    true,
+		".rar":   true,
+		".7z":    true,
+		".pdf":   true,
+		".mp3":   true,
+		".mp4":   true,
+		".mov":   true,
+		".wav":   true,
+		".wasm":  true,
 	}
-
-	// Large binary files that shouldn't be opened
-	largeBinaryExtensions = map[string]bool{
-		".png":  true,
-		".jpg":  true,
-		".jpeg": true,
-		".gif":  true,
-		".bmp":  true,
-		".ico":  true,
-		".zip":  true,
-		".tar":  true,
-		".gz":   true,
-		".rar":  true,
-		".7z":   true,
-		".pdf":  true,
-		".mp3":  true,
-		".mp4":  true,
-		".mov":  true,
-		".wav":  true,
-		".wasm": true,
-	}
-
-	// Maximum file size to open (5MB)
-	maxFileSize int64 = 5 * 1024 * 1024
-)
+}
 
 // shouldExcludeDir returns true if the directory should be excluded from watching/opening
 func shouldExcludeDir(dirPath string) bool {
@@ -801,6 +839,7 @@ func shouldExcludeDir(dirPath string) bool {
 	}
 
 	// Skip common excluded directories
+	excludedDirNames := getExcludedDirNames()
 	if excludedDirNames[dirName] {
 		return true
 	}
@@ -819,7 +858,8 @@ func shouldExcludeFile(filePath string) bool {
 
 	// Check file extension
 	ext := strings.ToLower(filepath.Ext(filePath))
-	if excludedFileExtensions[ext] || largeBinaryExtensions[ext] {
+	excludedFileExtensions := getExcludedFileExtensions()
+	if excludedFileExtensions[ext] {
 		return true
 	}
 

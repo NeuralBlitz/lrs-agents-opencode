@@ -1,0 +1,6 @@
+services:
+  lrsagentsopencode:
+    image: lrsagentsopencode
+    build:
+      context: .
+      dockerfile: ./Dockerfile

@@ -18,6 +18,7 @@ import (
 	"github.com/opencode-ai/opencode/internal/pubsub"
 	"github.com/opencode-ai/opencode/internal/tui"
 	"github.com/opencode-ai/opencode/internal/version"
+	"github.com/opencode-ai/opencode/cmd/mcp"
 	"github.com/spf13/cobra"
 )
 
@@ -306,4 +307,7 @@ func init() {
 	rootCmd.RegisterFlagCompletionFunc("output-format", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return format.SupportedFormats, cobra.ShellCompDirectiveNoFileComp
 	})
+
+	// Register MCP server subcommand
+	rootCmd.AddCommand(mcp.ServerCmd)
 }

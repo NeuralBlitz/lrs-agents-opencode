@@ -80,6 +80,12 @@ type ShellConfig struct {
 	Args []string `json:"args,omitempty"`
 }
 
+// WatcherConfig defines the configuration for file watching.
+type WatcherConfig struct {
+	ExcludedDirNames       []string `json:"excludedDirNames,omitempty"`
+	ExcludedFileExtensions []string `json:"excludedFileExtensions,omitempty"`
+}
+
 // Config is the main configuration structure for the application.
 type Config struct {
 	Data         Data                              `json:"data"`
@@ -94,6 +100,7 @@ type Config struct {
 	TUI          TUIConfig                         `json:"tui"`
 	Shell        ShellConfig                       `json:"shell,omitempty"`
 	AutoCompact  bool                              `json:"autoCompact,omitempty"`
+	Watcher      WatcherConfig                     `json:"watcher,omitempty"`
 }
 
 // Application constants
@@ -240,6 +247,54 @@ func setDefaults(debug bool) {
 	}
 	viper.SetDefault("shell.path", shellPath)
 	viper.SetDefault("shell.args", []string{"-l"})
+
+	// Set default watcher exclusions
+	viper.SetDefault("watcher.excludedDirNames", []string{
+		".git",
+		"node_modules",
+		"dist",
+		"build",
+		"out",
+		"bin",
+		".idea",
+		".vscode",
+		".cache",
+		"coverage",
+		"target", // Rust build output
+		"vendor", // Go vendor directory
+	})
+	viper.SetDefault("watcher.excludedFileExtensions", []string{
+		".swp",
+		".swo",
+		".tmp",
+		".temp",
+		".bak",
+		".log",
+		".o",     // Object files
+		".so",    // Shared libraries
+		".dylib", // macOS shared libraries
+		".dll",   // Windows shared libraries
+		".a",     // Static libraries
+		".exe",   // Windows executables
+		".lock",  // Lock files
+		".png",   // Large binary files
+		".jpg",
+		".jpeg",
+		".gif",
+		".bmp",
+		".ico",
+		".zip",
+		".tar",
+		".gz",
+		".rar",
+		".7z",
+		".pdf",
+		".mp3",
+		".mp4",
+		".mov",
+		".wav",
+		".wasm",
+	})
 
 	if debug {
 		viper.SetDefault("debug", true)
