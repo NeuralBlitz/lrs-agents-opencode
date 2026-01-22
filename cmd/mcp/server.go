@@ -40,10 +40,6 @@ It also provides resources and prompts for extended functionality.`,
   #   }
   # }`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// Import and run the server
-		// We need to call the runServer function from main.go
-		// Since we can't directly import main package, we'll need to refactor
-		// For now, this is a placeholder - users should run: go run cmd/mcp/main.go
-		return fmt.Errorf("MCP server subcommand is not yet integrated. Please run: go run cmd/mcp/main.go")
+		return RunServer()
 	},
 }
